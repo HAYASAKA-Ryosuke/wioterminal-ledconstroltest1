@@ -150,24 +150,19 @@ fn digital_pin_read(group: Group, pin: u32) -> Result<bool, DigitalPinReadError>
 
 #[entry]
 fn main() -> ! {
-        const PA_OUTSET: u32 = 0x41008018;
-        const PA_OUTCLR: u32 = 0x41008014;
+    // PA15(LED)を出力に設定
+    digital_output_mode(Group::Group1, 15, DigitalOutputMode::On).unwrap();
+    // PC26(button1)を入力に設定
+    digital_read_mode(Group::Group3, 26, DigitalReadMode::On).unwrap();
 
-        digital_output_mode(Group::Group1, 15, DigitalOutputMode::On).unwrap();
-
-        // PCグループのピンの入力をあつかうレジスタを選択
-        //const PC_IN: u32 = 0x41008020 + 0x80 * 2; // PCグループ(0x80 * 2)
-
-        digital_read_mode(Group::Group3, 26, DigitalReadMode::On).unwrap();
-
-        loop {
-            // PC26ピン(button1)が入力されていればLED ON
-            if digital_pin_read(Group::Group3, 26).unwrap() {
-                // *(PA_OUTCLR as *mut u32) = 1 << 15; // LED OFF(PA15)
-                digital_low(Group::Group1, 15).unwrap();
-            } else {
-                // *(PA_OUTSET as *mut u32) = 1 << 15;  // LED ON(PA15)
-                digital_high(Group::Group1, 15).unwrap();
-            }
+    loop {
+        // PC26ピン(button1)が入力されていればLED ON
+        if digital_pin_read(Group::Group3, 26).unwrap() {
+            // LED OFF(PA15)
+            digital_low(Group::Group1, 15).unwrap();
+        } else {
+            // LED ON(PA15)
+            digital_high(Group::Group1, 15).unwrap();
         }
+    }
 }
