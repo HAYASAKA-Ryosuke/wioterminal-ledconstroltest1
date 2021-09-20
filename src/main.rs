@@ -7,6 +7,11 @@ use panic_halt as _;
 use wio_terminal as wio;
 use wio::entry;
 
+#[derive(Debug)]
+enum Error {
+    MissingPin,
+}
+
 enum Group {
     Group1,
     Group2,
@@ -19,34 +24,15 @@ enum DigitalOutputMode {
     Off
 }
 
-#[derive(Debug)]
-enum DigitalOutputModeError {
-    MissingPin,
-}
-
-#[derive(Debug)]
-enum DigitalHighLowError {
-    MissingPin,
-}
-
 enum DigitalReadMode {
     On,
     Off
 }
 
-#[derive(Debug)]
-enum DigitalReadModeError {
-    MissingPin,
-}
 
-#[derive(Debug)]
-enum DigitalPinReadError {
-    MissingPin,
-}
-
-fn digital_output_mode(group: Group, pin: u32, mode: DigitalOutputMode) -> Result<(), DigitalOutputModeError>{
+fn digital_output_mode(group: Group, pin: u32, mode: DigitalOutputMode) -> Result<(), Error>{
     if pin > 32 {
-        return Err(DigitalOutputModeError::MissingPin);
+        return Err(Error::MissingPin);
     }
     let group_number = match group {
         Group::Group4 => 3,
@@ -70,9 +56,9 @@ fn digital_output_mode(group: Group, pin: u32, mode: DigitalOutputMode) -> Resul
     Ok(())
 }
 
-fn digital_high(group: Group, pin: u32) -> Result<(), DigitalHighLowError> {
+fn digital_high(group: Group, pin: u32) -> Result<(), Error> {
     if pin > 32 {
-        return Err(DigitalHighLowError::MissingPin);
+        return Err(Error::MissingPin);
     }
     let group_number = match group {
         Group::Group4 => 3,
@@ -87,9 +73,9 @@ fn digital_high(group: Group, pin: u32) -> Result<(), DigitalHighLowError> {
     Ok(())
 }
 
-fn digital_low(group: Group, pin: u32) -> Result<(), DigitalHighLowError> {
+fn digital_low(group: Group, pin: u32) -> Result<(), Error> {
     if pin > 32 {
-        return Err(DigitalHighLowError::MissingPin);
+        return Err(Error::MissingPin);
     }
     let group_number = match group {
         Group::Group4 => 3,
@@ -104,9 +90,9 @@ fn digital_low(group: Group, pin: u32) -> Result<(), DigitalHighLowError> {
     Ok(())
 }
 
-fn digital_read_mode(group: Group, pin: u32, mode: DigitalReadMode) -> Result<(), DigitalReadModeError> {
+fn digital_read_mode(group: Group, pin: u32, mode: DigitalReadMode) -> Result<(), Error> {
     if pin > 32 {
-        return Err(DigitalReadModeError::MissingPin);
+        return Err(Error::MissingPin);
     }
     let group_number = match group {
         Group::Group4 => 3,
@@ -132,9 +118,9 @@ fn digital_read_mode(group: Group, pin: u32, mode: DigitalReadMode) -> Result<()
     Ok(())
 }
 
-fn digital_pin_read(group: Group, pin: u32) -> Result<bool, DigitalPinReadError> {
+fn digital_pin_read(group: Group, pin: u32) -> Result<bool, Error> {
     if pin > 32 {
-        return Err(DigitalPinReadError::MissingPin);
+        return Err(Error::MissingPin);
     }
     let group_number = match group {
         Group::Group4 => 3,
