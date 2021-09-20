@@ -49,6 +49,15 @@ fn digital_output_mode(group: Group, pin: u32, mode: DigitalOutputMode) -> Resul
     Ok(())
 }
 
+/// 出力可能なピンをHighにする
+/// 
+/// 無効なピンを指定されたときにはErrorを返却
+/// ## Examples
+/// PA15のピンをHighにするとき
+/// ```
+/// digital_output_mode(Group::group1, 15, DigitalReadMode::On).unwrap();
+/// digital_high(Group::group1, 15).unwrap()
+/// ```
 fn digital_high(group: Group, pin: u32) -> Result<(), Error> {
     if pin > 32 {
         return Err(Error::MissingPin);
@@ -60,6 +69,15 @@ fn digital_high(group: Group, pin: u32) -> Result<(), Error> {
     Ok(())
 }
 
+/// 出力可能なピンをLowにする
+/// 
+/// 無効なピンを指定されたときにはErrorを返却
+/// ## Examples
+/// PA15のピンをLowにするとき
+/// ```
+/// digital_output_mode(Group::group1, 15, DigitalReadMode::On).unwrap();
+/// digital_low(Group::group1, 15).unwrap()
+/// ```
 fn digital_low(group: Group, pin: u32) -> Result<(), Error> {
     if pin > 32 {
         return Err(Error::MissingPin);
@@ -71,6 +89,14 @@ fn digital_low(group: Group, pin: u32) -> Result<(), Error> {
     Ok(())
 }
 
+/// ピン入力を検出できるようにする
+/// 
+/// 無効なピンを指定されたときにはErrorを返却
+/// ## Examples
+/// ```
+/// digital_read_mode(Group::group3, 26, DigitalReadMode::On).unwrap();
+/// digital_pin_read(Group::group3, 26).unwrap()
+/// ```
 fn digital_read_mode(group: Group, pin: u32, mode: DigitalReadMode) -> Result<(), Error> {
     if pin > 32 {
         return Err(Error::MissingPin);
@@ -93,6 +119,17 @@ fn digital_read_mode(group: Group, pin: u32, mode: DigitalReadMode) -> Result<()
     Ok(())
 }
 
+/// ピン入力状態を取得
+/// 
+/// 入力状態のときtrue,未入力のときfalse
+/// 
+/// 無効なピンを指定されたときにはErrorを返却
+/// 
+/// ## Examples
+/// ```
+/// digital_read_mode(Group::group3, 26, DigitalReadMode::On).unwrap();
+/// digital_pin_read(Group::group3, 26).unwrap()
+/// ```
 fn digital_pin_read(group: Group, pin: u32) -> Result<bool, Error> {
     if pin > 32 {
         return Err(Error::MissingPin);
@@ -101,6 +138,7 @@ fn digital_pin_read(group: Group, pin: u32) -> Result<bool, Error> {
     unsafe {
         Ok(*(pin_in as *mut u32) & (1 << pin) != 0)
     }
+    
 }
 
 #[entry]
