@@ -136,7 +136,7 @@ fn digital_pin_read(group: Group, pin: u32) -> Result<bool, Error> {
     }
     let pin_in = 0x41008020 + (0x80 * (group as u32));
     unsafe {
-        Ok(*(pin_in as *mut u32) & (1 << pin) != 0)
+        Ok(*(pin_in as *mut u32) & (1 << pin) == 0)
     }
     
 }
@@ -151,11 +151,11 @@ fn main() -> ! {
     loop {
         // PC26ピン(button1)が入力されていればLED ON
         if digital_pin_read(Group::Group3, 26).unwrap() {
-            // LED OFF(PA15)
-            digital_low(Group::Group1, 15).unwrap();
-        } else {
             // LED ON(PA15)
             digital_high(Group::Group1, 15).unwrap();
+        } else {
+            // LED OFF(PA15)
+            digital_low(Group::Group1, 15).unwrap();
         }
     }
 }
