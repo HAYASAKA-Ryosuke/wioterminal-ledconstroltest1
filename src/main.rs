@@ -1,28 +1,30 @@
 #![no_std]
 #![no_main]
 #![allow(dead_code)]
-mod digital;
+mod lib;
 
 
 use panic_halt as _;
 use wio_terminal as wio;
+
 use wio::entry;
 
 #[entry]
 fn main() -> ! {
-    // PA15(LED)を出力に設定
-    digital::digital_output_mode(digital::Group::Group1, 15, digital::DigitalOutputMode::On).unwrap();
+    let pins = lib::pin::init_pins();
+    // PC5(LCD light)を出力に設定
+    lib::digital::digital_output_mode(&pins.C5, lib::digital::DigitalOutputMode::On).unwrap();
     // PC26(button1)を入力に設定
-    digital::digital_read_mode(digital::Group::Group3, 26, digital::DigitalReadMode::On).unwrap();
+    lib::digital::digital_read_mode(&pins.C26, lib::digital::DigitalReadMode::On).unwrap();
 
     loop {
         // PC26ピン(button1)が入力されていればLED ON
-        if digital::digital_pin_read(digital::Group::Group3, 26).unwrap() {
-            // LED ON(PA15)
-            digital::digital_high(digital::Group::Group1, 15).unwrap();
+        if lib::digital::digital_pin_read(&pins.C26).unwrap() {
+            // lcd light ON(PC5)
+            lib::digital::digital_high(&pins.C5).unwrap();
         } else {
-            // LED OFF(PA15)
-            digital::digital_low(digital::Group::Group1, 15).unwrap();
+            // lcd light OFF(PC5)
+            lib::digital::digital_low(&pins.C5).unwrap();
         }
     }
 }

@@ -1,13 +1,8 @@
+use crate::{lib};
+
 #[derive(Debug)]
 pub enum Error {
     MissingPin,
-}
-
-pub enum Group {
-    Group1 = 0,
-    Group2,
-    Group3,
-    Group4,
 }
 
 pub enum DigitalOutputMode {
@@ -20,20 +15,21 @@ pub enum DigitalReadMode {
     Off
 }
 
-pub fn digital_output_mode(group: Group, pin: u32, mode: DigitalOutputMode) -> Result<(), Error>{
-    if pin > 32 {
+
+pub fn digital_output_mode(pin: &lib::pin::PinGroup, mode: DigitalOutputMode) -> Result<(), Error>{
+    if pin.number > 32 {
         return Err(Error::MissingPin);
     }
-    let dirset = 0x41008008 + (0x80 * (group as u32) );
+    let dirset = 0x41008008 + (0x80 * (pin.group as u32) );
     match mode {
         DigitalOutputMode::Off => {
             unsafe {
-                *(dirset as *mut u32) &= !(1 << pin);
+                *(dirset as *mut u32) &= !(1 << pin.number);
             }
         },
         DigitalOutputMode::On => {
             unsafe {
-               *(dirset as *mut u32) |= 1 << pin;
+               *(dirset as *mut u32) |= 1 << pin.number;
             }
         }
     }
@@ -49,13 +45,13 @@ pub fn digital_output_mode(group: Group, pin: u32, mode: DigitalOutputMode) -> R
 /// digital_output_mode(Group::group1, 15, DigitalReadMode::On).unwrap();
 /// digital_high(Group::group1, 15).unwrap()
 /// ```
-pub fn digital_high(group: Group, pin: u32) -> Result<(), Error> {
-    if pin > 32 {
+pub fn digital_high(pin: &lib::pin::PinGroup) -> Result<(), Error> {
+    if pin.number > 32 {
         return Err(Error::MissingPin);
     }
-    let outset = 0x41008018 + (0x80 * (group as u32));
+    let outset = 0x41008018 + (0x80 * (pin.group as u32));
     unsafe {
-        *(outset as *mut u32) |= 1 << pin; 
+        *(outset as *mut u32) |= 1 << pin.number;
     }
     Ok(())
 }
@@ -69,13 +65,13 @@ pub fn digital_high(group: Group, pin: u32) -> Result<(), Error> {
 /// digital_output_mode(Group::group1, 15, DigitalReadMode::On).unwrap();
 /// digital_low(Group::group1, 15).unwrap()
 /// ```
-pub fn digital_low(group: Group, pin: u32) -> Result<(), Error> {
-    if pin > 32 {
+pub fn digital_low(pin: &lib::pin::PinGroup) -> Result<(), Error> {
+    if pin.number > 32 {
         return Err(Error::MissingPin);
     }
-    let outclr = 0x41008014 + (0x80 * (group as u32));
+    let outclr = 0x41008014 + (0x80 * (pin.group as u32));
     unsafe {
-        *(outclr as *mut u32) |= 1 << pin;
+        *(outclr as *mut u32) |= 1 << pin.number;
     }
     Ok(())
 }
@@ -88,11 +84,11 @@ pub fn digital_low(group: Group, pin: u32) -> Result<(), Error> {
 /// digital_read_mode(Group::group3, 26, DigitalReadMode::On).unwrap();
 /// digital_pin_read(Group::group3, 26).unwrap()
 /// ```
-pub fn digital_read_mode(group: Group, pin: u32, mode: DigitalReadMode) -> Result<(), Error> {
-    if pin > 32 {
+pub fn digital_read_mode(pin: &lib::pin::PinGroup, mode: DigitalReadMode) -> Result<(), Error> {
+    if pin.number > 32 {
         return Err(Error::MissingPin);
     }
-    let pin_config = 0x41008040 + (0x80 * (group as u32)) + (0x01 * pin);
+    let pin_config = 0x41008040 + (0x80 * (pin.group as u32)) + (0x01 * pin.number);
     match mode {
         DigitalReadMode::On => {
             unsafe {
@@ -121,13 +117,13 @@ pub fn digital_read_mode(group: Group, pin: u32, mode: DigitalReadMode) -> Resul
 /// digital_read_mode(Group::group3, 26, DigitalReadMode::On).unwrap();
 /// digital_pin_read(Group::group3, 26).unwrap()
 /// ```
-pub fn digital_pin_read(group: Group, pin: u32) -> Result<bool, Error> {
-    if pin > 32 {
+pub fn digital_pin_read(pin: &lib::pin::PinGroup) -> Result<bool, Error> {
+    if pin.number > 32 {
         return Err(Error::MissingPin);
     }
-    let pin_in = 0x41008020 + (0x80 * (group as u32));
+    let pin_in = 0x41008020 + (0x80 * (pin.group as u32));
     unsafe {
-        Ok(*(pin_in as *mut u32) & (1 << pin) == 0)
+        Ok(*(pin_in as *mut u32) & (1 << pin.number) == 0)
     }
     
 }
